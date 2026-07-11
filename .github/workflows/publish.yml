@@ -1,0 +1,25 @@
+name: Publish Security Library to NuGet
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'src/**'
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+          
+      - name: Build and Pack
+        run: dotnet pack src/DotCruz.Shared.Security.csproj -c Release -o out
+        
+      - name: Push to NuGet.org
+        run: dotnet nuget push out/*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }}
