@@ -1,3 +1,5 @@
 <Solution>
-  <Project Path="src/DotCruz.Shared.Security.csproj" />
+  <Folder Name="/src/">
+    <Project Path="src/DotCruz.Shared.Security.csproj" />
+  </Folder>
 </Solution>

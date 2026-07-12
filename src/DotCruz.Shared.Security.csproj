@@ -7,11 +7,11 @@
     <IsPackable>true</IsPackable>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageId>DotCruz.Shared.Security</PackageId>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <Authors>Matheus Felipe @matheusfsc28</Authors>
     <Company>DotCruz</Company>
     <Description>Biblioteca de segurança compartilhada da DotCruz contendo middlewares, validação de tokens JWT e propagação automática de TenantId.</Description>
-    <RepositoryUrl>https://github.com/matheusfsc28/DotCruz.Shared.Security</RepositoryUrl>
+    <RepositoryUrl>https://github.com/dotcruz-ecosystem/DotCruz.Shared.Security</RepositoryUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 

@@ -1,5 +1,6 @@
 using DotCruz.Shared.Security.Authentication.ApiKey;
 using DotCruz.Shared.Security.Authentication.Jwt;
+using DotCruz.Shared.Security.Resources;
 using DotCruz.Shared.Security.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
@@ -12,20 +13,23 @@ public static class AuthenticationExtensions
 {
     public static IServiceCollection AddSharedAuthentication(this IServiceCollection services, IConfiguration configuration)
     {
+        var isDesignTime = AppDomain.CurrentDomain.GetAssemblies()
+            .Any(a => a.GetName().Name == "Microsoft.EntityFrameworkCore.Design");
+
         var jwtSettings = configuration.GetSection("Settings:Jwt").Get<JwtSettings>();
 
-        if (jwtSettings == null || !jwtSettings.IsValid)
-            throw new InvalidOperationException(DotCruz.Shared.Security.Resources.SecurityResources.CriticalJwtConfigMissing);
+        if (!isDesignTime && (jwtSettings == null || !jwtSettings.IsValid))
+            throw new InvalidOperationException(SecurityResources.CriticalJwtConfigMissing);
 
         var selfServiceAuthSettings = configuration.GetSection("Settings:ServiceAuth:Self").Get<SelfServiceAuthSettings>();
 
-        if (selfServiceAuthSettings == null || !selfServiceAuthSettings.IsValid)
-            throw new InvalidOperationException(DotCruz.Shared.Security.Resources.SecurityResources.CriticalServiceAuthConfigMissing);
+        if (!isDesignTime && (selfServiceAuthSettings == null || !selfServiceAuthSettings.IsValid))
+            throw new InvalidOperationException(SecurityResources.CriticalServiceAuthConfigMissing);
 
         services.Configure<ServiceAuthSelfOptions>(configuration.GetSection("Settings:ServiceAuth:Self"));
         services.AddTransient<ServiceApiKeyHttpClientHandler>();
 
-        services.AddSingleton<IJwksKeyResolver>(new JwksKeyResolver(jwtSettings.JwksUrl));
+        services.AddSingleton<IJwksKeyResolver>(new JwksKeyResolver(jwtSettings?.JwksUrl ?? "http://localhost"));
 
         services.AddAuthentication(options =>
         {
@@ -41,9 +45,9 @@ public static class AuthenticationExtensions
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
-                    ValidIssuer = jwtSettings.Issuer,
+                    ValidIssuer = jwtSettings?.Issuer ?? "dummy",
                     ValidateAudience = true,
-                    ValidAudience = jwtSettings.Audience,
+                    ValidAudience = jwtSettings?.Audience ?? "dummy",
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.Zero,
                     ValidateIssuerSigningKey = true,
