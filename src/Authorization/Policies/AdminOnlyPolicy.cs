@@ -9,7 +9,7 @@ public static class AdminOnlyPolicy
     {
         return new AuthorizationPolicyBuilder()
             .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
-            .RequireRole("Admin")
+            .RequireRole("SuperAdmin")
             .Build();
     }
 }

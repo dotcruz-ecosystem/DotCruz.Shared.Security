@@ -9,7 +9,7 @@ public static class TenantAdminOrAdminPolicy
     {
         return new AuthorizationPolicyBuilder()
             .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
-            .RequireRole("TenantAdmin", "Admin")
+            .RequireRole("TenantAdmin", "SuperAdmin")
             .Build();
     }
 }
