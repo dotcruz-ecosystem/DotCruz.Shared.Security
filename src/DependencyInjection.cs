@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+
 namespace DotCruz.Shared.Security;
 
 public static class DependencyInjection
@@ -17,7 +20,9 @@ public static class DependencyInjection
         services.AddSharedAuthentication(configuration);
         services.AddSharedAuthorization();
 
-        services.Configure<MvcOptions>(options => options.Conventions.Add(new AuthorizeOverrideConvention()));
+        // Registra o provedor que prioriza a autorização da Action sobre a do Controller
+        services.TryAddEnumerable(
+            ServiceDescriptor.Transient<IActionDescriptorProvider, AuthorizeOverrideActionDescriptorProvider>());
 
         return services;
     }
