@@ -1,5 +1,7 @@
+using DotCruz.Shared.Security.Authorization;
 using DotCruz.Shared.Security.Context;
 using DotCruz.Shared.Security.Extensions;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -14,6 +16,8 @@ public static class DependencyInjection
 
         services.AddSharedAuthentication(configuration);
         services.AddSharedAuthorization();
+
+        services.Configure<MvcOptions>(options => options.Conventions.Add(new AuthorizeOverrideConvention()));
 
         return services;
     }
