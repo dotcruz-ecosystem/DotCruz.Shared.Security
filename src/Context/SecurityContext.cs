@@ -1,3 +1,4 @@
+using DotCruz.Shared.Security.CustomClaim;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 
@@ -5,9 +6,6 @@ namespace DotCruz.Shared.Security.Context;
 
 public class SecurityContext(IHttpContextAccessor httpContextAccessor) : ISecurityContext
 {
-    private const string TenantIdClaimType = "tenant_id";
-    private const string TenantIdClaimTypeAlternative = "TenantId";
-
     public Guid? UserId
     {
         get
@@ -30,8 +28,7 @@ public class SecurityContext(IHttpContextAccessor httpContextAccessor) : ISecuri
             var httpContext = httpContextAccessor.HttpContext;
             if (httpContext == null) return null;
 
-            var tenantClaim = httpContext.User?.FindFirst(TenantIdClaimType)?.Value 
-                              ?? httpContext.User?.FindFirst(TenantIdClaimTypeAlternative)?.Value;
+            var tenantClaim = httpContext.User?.FindFirst(CustomClaimsTypes.TenantId)?.Value;
 
             if (Guid.TryParse(tenantClaim, out var tenantId))
                 return tenantId;
@@ -81,7 +78,7 @@ public class SecurityContext(IHttpContextAccessor httpContextAccessor) : ISecuri
         get
         {
             var user = httpContextAccessor.HttpContext?.User;
-            return user != null && user.Identity?.IsAuthenticated == true && user.HasClaim("service_identity", "true");
+            return user != null && user.Identity?.IsAuthenticated == true && user.HasClaim(CustomClaimsTypes.ServiceIdentity, "true");
         }
     }
 }

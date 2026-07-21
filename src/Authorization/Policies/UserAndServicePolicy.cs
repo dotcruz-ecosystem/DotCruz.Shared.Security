@@ -1,4 +1,5 @@
 using DotCruz.Shared.Security.Authentication.ApiKey;
+using DotCruz.Shared.Security.CustomClaim;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
@@ -13,7 +14,7 @@ public static class UserAndServicePolicy
             .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme, ServiceApiKeyDefaults.AuthenticationScheme)
             .RequireAuthenticatedUser()
             .RequireClaim(ClaimTypes.Sid)
-            .RequireClaim("service_identity", "true")
+            .RequireClaim(CustomClaimsTypes.ServiceIdentity, "true")
             .Build();
     }
 }

@@ -1,4 +1,5 @@
 using DotCruz.Shared.Security.Authentication.ApiKey;
+using DotCruz.Shared.Security.CustomClaim;
 using Microsoft.AspNetCore.Authorization;
 
 namespace DotCruz.Shared.Security.Authorization.Policies;
@@ -9,7 +10,7 @@ public static class ServiceOnlyPolicy
     {
         return new AuthorizationPolicyBuilder()
             .AddAuthenticationSchemes(ServiceApiKeyDefaults.AuthenticationScheme)
-            .RequireClaim("service_identity", "true")
+            .RequireClaim(CustomClaimsTypes.ServiceIdentity, "true")
             .Build();
     }
 }

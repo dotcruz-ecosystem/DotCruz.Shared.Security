@@ -1,8 +1,11 @@
+using DotCruz.Shared.Security.CustomClaim;
+using DotCruz.Shared.Security.Resources;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Text;
 using System.Text.Encodings.Web;
 
 namespace DotCruz.Shared.Security.Authentication.ApiKey;
@@ -22,7 +25,7 @@ public class ServiceApiKeyHandler : AuthenticationHandler<ServiceApiKeyOptions>
         if (!Request.Headers.TryGetValue(ServiceNameHeaderName, out var serviceNameValues) ||
             string.IsNullOrWhiteSpace(serviceNameValues.ToString()))
         {
-            return Task.FromResult(AuthenticateResult.Fail(DotCruz.Shared.Security.Resources.SecurityResources.ServiceNameMissing));
+            return Task.FromResult(AuthenticateResult.Fail(SecurityResources.ServiceNameMissing));
         }
 
         var serviceName = serviceNameValues.ToString();
@@ -41,21 +44,21 @@ public class ServiceApiKeyHandler : AuthenticationHandler<ServiceApiKeyOptions>
         if (!Options.Keys.TryGetValue(serviceName, out var expectedApiKey) ||
             string.IsNullOrWhiteSpace(expectedApiKey))
         {
-            return Task.FromResult(AuthenticateResult.Fail(string.Format(DotCruz.Shared.Security.Resources.SecurityResources.ServiceNotAuthorized, serviceName)));
+            return Task.FromResult(AuthenticateResult.Fail(string.Format(SecurityResources.ServiceNotAuthorized, serviceName)));
         }
 
-        var providedBytes = System.Text.Encoding.UTF8.GetBytes(providedApiKey);
-        var expectedBytes = System.Text.Encoding.UTF8.GetBytes(expectedApiKey);
+        var providedBytes = Encoding.UTF8.GetBytes(providedApiKey);
+        var expectedBytes = Encoding.UTF8.GetBytes(expectedApiKey);
 
         if (!CryptographicOperations.FixedTimeEquals(providedBytes, expectedBytes))
         {
-            return Task.FromResult(AuthenticateResult.Fail(DotCruz.Shared.Security.Resources.SecurityResources.InvalidApiKey));
+            return Task.FromResult(AuthenticateResult.Fail(SecurityResources.InvalidApiKey));
         }
 
         var claims = new[]
         {
             new Claim(ClaimTypes.Name, serviceName),
-            new Claim("service_identity", "true")
+            new Claim(CustomClaimsTypes.ServiceIdentity, "true")
         };
 
         var identity = new ClaimsIdentity(claims, Scheme.Name);
