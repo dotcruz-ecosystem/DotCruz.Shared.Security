@@ -33,6 +33,9 @@ public class SecurityContext(IHttpContextAccessor httpContextAccessor) : ISecuri
             if (Guid.TryParse(tenantClaim, out var tenantId))
                 return tenantId;
 
+            if (!IsAuthenticatedService)
+                return null;
+
             if (httpContext.Request.Headers.TryGetValue("X-Tenant-ID", out var tenantHeader))
             {
                 if (Guid.TryParse(tenantHeader.ToString(), out var parsedId))
