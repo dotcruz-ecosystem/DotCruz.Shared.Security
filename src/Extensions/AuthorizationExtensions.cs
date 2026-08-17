@@ -15,7 +15,8 @@ public static class AuthorizationExtensions
             .AddPolicy(SecurityPolicies.UserOrService, UserOrServicePolicy.Build())
             .AddPolicy(SecurityPolicies.AdminOnly, AdminOnlyPolicy.Build())
             .AddPolicy(SecurityPolicies.TenantAdminOrAdmin, TenantAdminOrAdminPolicy.Build())
-            .AddPolicy(SecurityPolicies.AnyUser, AnyUserPolicy.Build());
+            .AddPolicy(SecurityPolicies.AnyUser, AnyUserPolicy.Build())
+            .SetFallbackPolicy(AuthenticatedUserFallbackPolicy.Build());
 
         return services;
     }
