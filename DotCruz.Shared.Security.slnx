@@ -2,4 +2,7 @@
   <Folder Name="/src/">
     <Project Path="src/DotCruz.Shared.Security.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/DotCruz.Shared.Security.Test/DotCruz.Shared.Security.Test.csproj" />
+  </Folder>
 </Solution>
