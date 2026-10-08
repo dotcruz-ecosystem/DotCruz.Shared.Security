@@ -14,7 +14,7 @@ public static class DependencyInjection
     {
         services.AddHttpContextAccessor();
         services.AddScoped<ISecurityContext, SecurityContext>();
-        services.AddScoped<ITenantProvider, TenantProvider>();
+        services.AddScoped<IWorkspaceProvider, WorkspaceProvider>();
 
         services.AddSharedAuthentication(configuration);
         services.AddSharedAuthorization();

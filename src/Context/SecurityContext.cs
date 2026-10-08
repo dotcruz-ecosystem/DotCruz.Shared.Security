@@ -21,24 +21,24 @@ public class SecurityContext(IHttpContextAccessor httpContextAccessor) : ISecuri
         }
     }
 
-    public Guid? TenantId
+    public Guid? WorkspaceId
     {
         get
         {
             var httpContext = httpContextAccessor.HttpContext;
             if (httpContext == null) return null;
 
-            var tenantClaim = httpContext.User?.FindFirst(CustomClaimsTypes.TenantId)?.Value;
+            var workspaceClaim = httpContext.User?.FindFirst(CustomClaimsTypes.WorkspaceId)?.Value;
 
-            if (Guid.TryParse(tenantClaim, out var tenantId))
-                return tenantId;
+            if (Guid.TryParse(workspaceClaim, out var workspaceId))
+                return workspaceId;
 
             if (!IsAuthenticatedService)
                 return null;
 
-            if (httpContext.Request.Headers.TryGetValue("X-Tenant-ID", out var tenantHeader))
+            if (httpContext.Request.Headers.TryGetValue("X-Workspace-ID", out var workspaceHeader))
             {
-                if (Guid.TryParse(tenantHeader.ToString(), out var parsedId))
+                if (Guid.TryParse(workspaceHeader.ToString(), out var parsedId))
                     return parsedId;
             }
 

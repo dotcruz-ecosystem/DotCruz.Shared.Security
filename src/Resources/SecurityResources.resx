@@ -74,6 +74,6 @@
     <value>Invalid API Key.</value>
   </data>
   <data name="AuditLogMessage" xml:space="preserve">
-    <value>AuditLog: UserId={UserId}, ServiceName={ServiceName}, TenantId={TenantId}, HttpMethod={HttpMethod}, Path={Path}, StatusCode={StatusCode}</value>
+    <value>AuditLog: UserId={UserId}, ServiceName={ServiceName}, WorkspaceId={WorkspaceId}, HttpMethod={HttpMethod}, Path={Path}, StatusCode={StatusCode}</value>
   </data>
 </root>

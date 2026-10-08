@@ -15,14 +15,14 @@ public class AuditLogMiddleware(
 
         var userId = securityContext.UserId;
         var serviceName = securityContext.ServiceName;
-        var tenantId = securityContext.TenantId;
+        var workspaceId = securityContext.WorkspaceId;
         var httpMethod = context.Request.Method;
         var path = context.Request.Path;
         var statusCode = context.Response.StatusCode;
 
         logger.LogInformation(
             DotCruz.Shared.Security.Resources.SecurityResources.AuditLogMessage,
-            userId, serviceName, tenantId, httpMethod, path, statusCode
+            userId, serviceName, workspaceId, httpMethod, path, statusCode
         );
     }
 }

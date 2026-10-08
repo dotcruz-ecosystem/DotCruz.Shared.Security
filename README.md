@@ -21,16 +21,16 @@ Ou via Gerenciador de Pacotes do Visual Studio procurando por `DotCruz.Shared.Se
 ### Contexto de Segurança
 - **ISecurityContext**: Interface injetável que fornece acesso seguro aos dados do usuário/serviço autenticado na requisição atual:
   - `UserId`: ID do usuário autenticado.
-  - `TenantId`: ID do Tenant ativo (resolvido via claims ou cabeçalho `X-Tenant-ID`).
+  - `WorkspaceId`: ID do Workspace ativo (resolvido via claims ou cabeçalho `X-Workspace-ID`).
   - `Roles`: Funções atribuídas ao usuário.
   - `IsAuthenticatedUser`: Indica se a chamada é de um usuário final autenticado.
   - `IsAuthenticatedService`: Indica se a chamada é de integração de serviços (M2M) autenticada.
 
 ### Observabilidade
-- **AuditLogMiddleware**: Middleware integrado para gravação de logs de auditoria detalhados de requisições HTTP (usuário, serviço, tenant, método, endpoint e status de retorno).
+- **AuditLogMiddleware**: Middleware integrado para gravação de logs de auditoria detalhados de requisições HTTP (usuário, serviço, workspace, método, endpoint e status de retorno).
 
 ### Propagação de Contexto
-- **AddServiceApiKeyPropagation**: Extensão para `IHttpClientBuilder` que registra automaticamente o `ServiceApiKeyHttpClientHandler`, propagando a chave de API do serviço e o cabeçalho `X-Tenant-ID` da requisição atual para chamadas HTTP de saída.
+- **AddServiceApiKeyPropagation**: Extensão para `IHttpClientBuilder` que registra automaticamente o `ServiceApiKeyHttpClientHandler`, propagando a chave de API do serviço e o cabeçalho `X-Workspace-ID` da requisição atual para chamadas HTTP de saída.
 
 ---
 
@@ -60,7 +60,7 @@ app.Run();
 
 ### 2. Configurando a Propagação em HttpClients
 
-Para propagar a segurança e o `TenantId` em chamadas para outros microsserviços do ecossistema:
+Para propagar a segurança e o `WorkspaceId` em chamadas para outros microsserviços do ecossistema:
 
 ```csharp
 using DotCruz.Shared.Security;
@@ -81,7 +81,7 @@ public class CustomService(ISecurityContext securityContext)
 {
     public void ExecutarAcao()
     {
-        var tenantId = securityContext.TenantId;
+        var workspaceId = securityContext.WorkspaceId;
         var userId = securityContext.UserId;
         
         if (securityContext.IsAuthenticatedService)

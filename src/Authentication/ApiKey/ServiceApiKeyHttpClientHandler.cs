@@ -24,11 +24,11 @@ public class ServiceApiKeyHttpClientHandler : DelegatingHandler
         request.Headers.Add("X-Api-Key", _selfOptions.Key);
         request.Headers.Add("X-Service-Name", _selfOptions.Name);
 
-        var tenantId = _securityContext.TenantId;
-        if (tenantId.HasValue)
+        var workspaceId = _securityContext.WorkspaceId;
+        if (workspaceId.HasValue)
         {
-            request.Headers.Remove("X-Tenant-ID");
-            request.Headers.Add("X-Tenant-ID", tenantId.Value.ToString());
+            request.Headers.Remove("X-Workspace-ID");
+            request.Headers.Add("X-Workspace-ID", workspaceId.Value.ToString());
         }
 
         return base.SendAsync(request, cancellationToken);

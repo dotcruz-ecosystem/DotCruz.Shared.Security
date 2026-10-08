@@ -12,55 +12,55 @@ public class SecurityContextTest
     private const string JwtScheme = "Bearer";
 
     [Fact]
-    public void TenantId_Comes_From_Claim_For_Authenticated_User()
+    public void WorkspaceId_Comes_From_Claim_For_Authenticated_User()
     {
-        var tenantId = Guid.NewGuid();
-        var context = BuildUser(tenantId: tenantId);
+        var workspaceId = Guid.NewGuid();
+        var context = BuildUser(workspaceId: workspaceId);
 
-        Assert.Equal(tenantId, context.TenantId);
+        Assert.Equal(workspaceId, context.WorkspaceId);
     }
 
     [Fact]
-    public void TenantId_Ignores_Header_When_Caller_Is_A_User()
+    public void WorkspaceId_Ignores_Header_When_Caller_Is_A_User()
     {
-        var headerTenantId = Guid.NewGuid();
-        var context = BuildUser(tenantId: null, headerTenantId: headerTenantId);
+        var headerWorkspaceId = Guid.NewGuid();
+        var context = BuildUser(workspaceId: null, headerWorkspaceId: headerWorkspaceId);
 
-        Assert.Null(context.TenantId);
+        Assert.Null(context.WorkspaceId);
     }
 
     [Fact]
-    public void TenantId_Prefers_Claim_Over_Header_For_A_User()
+    public void WorkspaceId_Prefers_Claim_Over_Header_For_A_User()
     {
-        var claimTenantId = Guid.NewGuid();
-        var context = BuildUser(tenantId: claimTenantId, headerTenantId: Guid.NewGuid());
+        var claimWorkspaceId = Guid.NewGuid();
+        var context = BuildUser(workspaceId: claimWorkspaceId, headerWorkspaceId: Guid.NewGuid());
 
-        Assert.Equal(claimTenantId, context.TenantId);
+        Assert.Equal(claimWorkspaceId, context.WorkspaceId);
     }
 
     [Fact]
-    public void TenantId_Ignores_Header_When_Caller_Is_Anonymous()
+    public void WorkspaceId_Ignores_Header_When_Caller_Is_Anonymous()
     {
-        var context = BuildAnonymous(headerTenantId: Guid.NewGuid());
+        var context = BuildAnonymous(headerWorkspaceId: Guid.NewGuid());
 
-        Assert.Null(context.TenantId);
+        Assert.Null(context.WorkspaceId);
     }
 
     [Fact]
-    public void TenantId_Comes_From_Header_For_Authenticated_Service()
+    public void WorkspaceId_Comes_From_Header_For_Authenticated_Service()
     {
-        var headerTenantId = Guid.NewGuid();
-        var context = BuildService(headerTenantId: headerTenantId);
+        var headerWorkspaceId = Guid.NewGuid();
+        var context = BuildService(headerWorkspaceId: headerWorkspaceId);
 
-        Assert.Equal(headerTenantId, context.TenantId);
+        Assert.Equal(headerWorkspaceId, context.WorkspaceId);
     }
 
     [Fact]
-    public void TenantId_Is_Null_For_Service_Without_Header()
+    public void WorkspaceId_Is_Null_For_Service_Without_Header()
     {
-        var context = BuildService(headerTenantId: null);
+        var context = BuildService(headerWorkspaceId: null);
 
-        Assert.Null(context.TenantId);
+        Assert.Null(context.WorkspaceId);
     }
 
     [Fact]
@@ -71,17 +71,17 @@ public class SecurityContextTest
         Assert.False(BuildAnonymous(null).IsAuthenticatedService);
     }
 
-    private static ISecurityContext BuildUser(Guid? tenantId, Guid? headerTenantId = null)
+    private static ISecurityContext BuildUser(Guid? workspaceId, Guid? headerWorkspaceId = null)
     {
         var claims = new List<Claim> { new(ClaimTypes.Sid, Guid.NewGuid().ToString()) };
 
-        if (tenantId.HasValue)
-            claims.Add(new Claim(CustomClaimsTypes.TenantId, tenantId.Value.ToString()));
+        if (workspaceId.HasValue)
+            claims.Add(new Claim(CustomClaimsTypes.WorkspaceId, workspaceId.Value.ToString()));
 
-        return Build(new ClaimsIdentity(claims, JwtScheme), headerTenantId);
+        return Build(new ClaimsIdentity(claims, JwtScheme), headerWorkspaceId);
     }
 
-    private static ISecurityContext BuildService(Guid? headerTenantId)
+    private static ISecurityContext BuildService(Guid? headerWorkspaceId)
     {
         var claims = new List<Claim>
         {
@@ -89,21 +89,21 @@ public class SecurityContextTest
             new(CustomClaimsTypes.ServiceIdentity, "true")
         };
 
-        return Build(new ClaimsIdentity(claims, ApiKeyScheme), headerTenantId);
+        return Build(new ClaimsIdentity(claims, ApiKeyScheme), headerWorkspaceId);
     }
 
-    private static ISecurityContext BuildAnonymous(Guid? headerTenantId) =>
-        Build(new ClaimsIdentity(), headerTenantId);
+    private static ISecurityContext BuildAnonymous(Guid? headerWorkspaceId) =>
+        Build(new ClaimsIdentity(), headerWorkspaceId);
 
-    private static ISecurityContext Build(ClaimsIdentity identity, Guid? headerTenantId)
+    private static ISecurityContext Build(ClaimsIdentity identity, Guid? headerWorkspaceId)
     {
         var httpContext = new DefaultHttpContext
         {
             User = new ClaimsPrincipal(identity)
         };
 
-        if (headerTenantId.HasValue)
-            httpContext.Request.Headers["X-Tenant-ID"] = headerTenantId.Value.ToString();
+        if (headerWorkspaceId.HasValue)
+            httpContext.Request.Headers["X-Workspace-ID"] = headerWorkspaceId.Value.ToString();
 
         var accessor = new Mock<IHttpContextAccessor>();
         accessor.Setup(a => a.HttpContext).Returns(httpContext);
